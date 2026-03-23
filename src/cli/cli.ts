@@ -417,10 +417,11 @@ program
             process.stderr.write(data);
           });
 
-          // Forward process stdin to server stdin
+          // Forward process stdin to server stdin (strip trailing newline
+          // since send() appends its own newline delimiter)
           process.stdin.resume();
           process.stdin.on("data", (data: Buffer) => {
-            connection.send(data.toString().trimEnd());
+            connection.send(data.toString().replace(/\r?\n$/, ""));
           });
 
           // Handle server process exit
