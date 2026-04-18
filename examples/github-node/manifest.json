@@ -1,0 +1,110 @@
+{
+  "$schema": "../../dist/mcpb-manifest.schema.json",
+  "manifest_version": "0.3",
+  "name": "github-node",
+  "display_name": "GitHub",
+  "version": "1.0.0",
+  "description": "Interact with GitHub repositories, issues, pull requests, and code search.",
+  "long_description": "This MCP bundle connects Claude to the GitHub REST API, allowing you to browse repositories, read file contents, manage issues and pull requests, and search code — all using your personal access token.\n\nCapabilities include:\n- Listing and searching repositories\n- Reading file and directory contents\n- Listing branches and commits\n- Creating and reading issues and issue comments\n- Listing and reading pull requests\n- Searching code across GitHub",
+  "author": {
+    "name": "Anthropic",
+    "email": "support@anthropic.com",
+    "url": "https://github.com/anthropics"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anthropics/mcpb.git"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {
+        "GITHUB_TOKEN": "${user_config.github_token}",
+        "GITHUB_API_URL": "${user_config.github_api_url}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "list_repositories",
+      "description": "List repositories for a user or organization"
+    },
+    {
+      "name": "get_repository",
+      "description": "Get details about a specific repository"
+    },
+    {
+      "name": "get_file_contents",
+      "description": "Read the contents of a file or list a directory in a repository"
+    },
+    {
+      "name": "list_branches",
+      "description": "List branches in a repository"
+    },
+    {
+      "name": "list_commits",
+      "description": "List commits in a repository branch"
+    },
+    {
+      "name": "list_issues",
+      "description": "List issues in a repository"
+    },
+    {
+      "name": "get_issue",
+      "description": "Get details of a specific issue"
+    },
+    {
+      "name": "create_issue",
+      "description": "Create a new issue in a repository"
+    },
+    {
+      "name": "create_issue_comment",
+      "description": "Add a comment to an issue"
+    },
+    {
+      "name": "list_pull_requests",
+      "description": "List pull requests in a repository"
+    },
+    {
+      "name": "get_pull_request",
+      "description": "Get details of a specific pull request"
+    },
+    {
+      "name": "search_repositories",
+      "description": "Search for GitHub repositories"
+    },
+    {
+      "name": "search_code",
+      "description": "Search for code across GitHub"
+    }
+  ],
+  "keywords": ["github", "git", "repositories", "issues", "pull-requests", "code-search"],
+  "license": "MIT",
+  "user_config": {
+    "github_token": {
+      "type": "string",
+      "title": "GitHub Personal Access Token",
+      "description": "A GitHub personal access token (classic or fine-grained). Required for API access. Create one at https://github.com/settings/tokens",
+      "sensitive": true,
+      "required": true
+    },
+    "github_api_url": {
+      "type": "string",
+      "title": "GitHub API URL",
+      "description": "GitHub API base URL. Change this if you use GitHub Enterprise Server (e.g. https://github.example.com/api/v3).",
+      "default": "https://api.github.com",
+      "required": false
+    }
+  },
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "privacy_policies": []
+}
