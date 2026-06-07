@@ -59,6 +59,7 @@
     "dev": "tsc --watch",
     "test": "jest",
     "test:watch": "jest --watch",
+    "coverage": "jest --coverage",
     "prepublishOnly": "npm run build",
     "fix": "eslint --ext .ts . --fix && prettier -w .",
     "lint": "tsc -p ./tsconfig.json && eslint --ext .ts .",
