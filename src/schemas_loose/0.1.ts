@@ -105,6 +105,7 @@ export const McpbManifestSchema = z
       .record(z.string(), McpbUserConfigurationOptionSchema)
       .optional(),
   })
+  .passthrough()
   .refine((data) => !!(data.dxt_version || data.manifest_version), {
     message:
       "Either 'dxt_version' (deprecated) or 'manifest_version' must be provided",

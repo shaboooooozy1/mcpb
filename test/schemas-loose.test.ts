@@ -7,10 +7,9 @@ type ManifestVersion = keyof typeof MANIFEST_SCHEMAS_LOOSE;
 
 const VERSIONS = Object.keys(MANIFEST_SCHEMAS_LOOSE) as ManifestVersion[];
 
-// Versions whose top-level manifest object uses `.passthrough()` and therefore
-// preserve unknown fields. v0.1 uses a plain `z.object()` at the top level,
-// which accepts but strips unknown keys instead of preserving them.
-const PASSTHROUGH_VERSIONS: ManifestVersion[] = ["0.2", "0.3", "0.4"];
+// All loose schema versions apply `.passthrough()` at the top level and
+// therefore preserve unknown fields (forward compatibility).
+const PASSTHROUGH_VERSIONS: ManifestVersion[] = ["0.1", "0.2", "0.3", "0.4"];
 
 function baseManifest(version: ManifestVersion) {
   return {
@@ -67,21 +66,6 @@ describe("loose manifest schemas (forward compatibility)", () => {
       }
     },
   );
-
-  it("v0.1 accepts but strips unknown top-level fields", () => {
-    const manifest = {
-      ...baseManifest("0.1"),
-      future_field: "from-a-newer-spec",
-    };
-
-    const result = MANIFEST_SCHEMAS_LOOSE["0.1"].safeParse(manifest);
-
-    expect(result.success).toBe(true);
-    if (result.success) {
-      const data = result.data as Record<string, unknown>;
-      expect(data.future_field).toBeUndefined();
-    }
-  });
 
   it.each(VERSIONS)(
     "v%s strict schema rejects the same unknown top-level field",
