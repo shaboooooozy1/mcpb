@@ -1,6 +1,6 @@
 # Codebase issue triage: proposed tasks
 
-## 1) Typo fix task
+## 1) Typo fix task — Completed
 **Issue found:** `MANIFEST.md` contains a spelling typo: `approrpiate` in the locale fallback guidance.
 
 **Task:**
