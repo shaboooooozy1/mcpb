@@ -241,14 +241,13 @@ mcpb verify my-extension.mcpb
 
 When packing an extension, the following files/patterns are automatically excluded:
 
-- `.DS_Store`, `Thumbs.db`
-- `.gitignore`, `.git/`
-- `*.log`, `npm-debug.log*`, `yarn-debug.log*`, `yarn-error.log*`
-- `.npm/`, `.npmrc`, `.yarnrc`, `.yarn/`, `.pnp.*`
-- `node_modules/.cache/`, `node_modules/.bin/`
-- `*.map`
-- `.env.local`, `.env.*.local`
-- `package-lock.json`, `yarn.lock`
+- OS metadata: `.DS_Store`, `Thumbs.db`
+- Git and MCPB ignore metadata: `.gitignore`, `.git/`, `.mcpbignore`
+- Logs and debug output: `*.log`, `npm-debug.log*`, `yarn-debug.log*`, `yarn-error.log*`
+- Environment files: `.env*`, `.env.local`, `.env.*.local`
+- Package manager files: `.npm/`, `.npmrc`, `.yarnrc`, `.yarn/`, `.pnp.*`, `package-lock.json`, `yarn.lock`
+- Tool configuration: `.eslintrc`, `.editorconfig`, `.prettierrc`, `.prettierignore`, `.eslintignore`, `.nycrc`, `.babelrc`, `tsconfig.json`
+- Generated/build artifacts: `node_modules/.cache/`, `node_modules/.bin/`, `*.map`, `*.mcpb`, `*.d.ts`, `*.tsbuildinfo`
 
 ### Custom Exclusions with .mcpbignore
 
@@ -274,7 +273,7 @@ The `.mcpbignore` file supports:
 - **Comments**: Lines starting with `#` are ignored
 - **Empty lines**: Blank lines are ignored
 
-When a `.mcpbignore` file is found, the CLI will display the number of additional patterns being applied. These patterns are combined with the default exclusion list.
+When a `.mcpbignore` file is found, the CLI will display the number of additional patterns being applied. These patterns are combined with the default exclusion list, and the `.mcpbignore` file itself is excluded from the packaged bundle.
 
 ## Technical Details
 

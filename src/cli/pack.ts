@@ -9,7 +9,7 @@ import {
   statSync,
   writeFileSync,
 } from "fs";
-import { basename, join, relative, resolve, sep } from "path";
+import { basename, join, resolve } from "path";
 
 import { getAllFilesWithCount, readMcpbIgnorePatterns } from "../node/files.js";
 import { validateManifest } from "../node/validate.js";
@@ -154,7 +154,7 @@ export async function packExtension({
     const shallowFiles: Array<{ path: string; size: number }> = [];
 
     for (const [filePath, fileData] of fileEntries) {
-      const relPath = relative(resolvedPath, filePath);
+      const relPath = filePath;
       const content = fileData.data;
       const size =
         typeof content === "string"
@@ -163,7 +163,7 @@ export async function packExtension({
       totalUnpackedSize += size;
 
       // Check if file is deeply nested (3+ levels)
-      const parts = relPath.split(sep);
+      const parts = relPath.split("/");
       if (parts.length > 3) {
         // Group by the first 3 directory levels
         const groupKey = parts.slice(0, 3).join("/");

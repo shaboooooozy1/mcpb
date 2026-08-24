@@ -196,6 +196,15 @@ describe("DXT CLI", () => {
       fs.writeFileSync(join(tempDir, "file1.txt"), "hello");
       fs.mkdirSync(join(tempDir, "subdir"));
       fs.writeFileSync(join(tempDir, "subdir", "file2.txt"), "world");
+      fs.mkdirSync(join(tempDir, "server", "tools", "nested"), {
+        recursive: true,
+      });
+      for (const fileName of ["a.txt", "b.txt", "c.txt", "d.txt"]) {
+        fs.writeFileSync(
+          join(tempDir, "server", "tools", "nested", fileName),
+          fileName,
+        );
+      }
     });
 
     afterAll(() => {
@@ -207,11 +216,19 @@ describe("DXT CLI", () => {
       }
     });
 
-    it("should pack an extension", () => {
-      execSync(`node ${cliPath} pack ${tempDir} ${packedFilePath}`, {
-        encoding: "utf-8",
-      });
+    it("should pack an extension with relative archive paths", () => {
+      const result = execSync(
+        `node ${cliPath} pack ${tempDir} ${packedFilePath}`,
+        {
+          encoding: "utf-8",
+        },
+      );
+
       expect(fs.existsSync(packedFilePath)).toBe(true);
+      expect(result).toContain("file1.txt");
+      expect(result).toContain("subdir/file2.txt");
+      expect(result).toContain("server/tools/nested/ [and 4 more files]");
+      expect(result).not.toMatch(/\.\.[/\\]/);
     });
 
     it("should unpack an extension", () => {
