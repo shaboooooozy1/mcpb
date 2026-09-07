@@ -2,7 +2,7 @@ import { existsSync, readFileSync, statSync } from "fs";
 import * as fs from "fs/promises";
 import { DestroyerOfModules } from "galactus";
 import * as os from "os";
-import { dirname, isAbsolute, join, resolve } from "path";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "path";
 import prettyBytes from "pretty-bytes";
 
 import { unpackExtension } from "../cli/unpack.js";
@@ -75,8 +75,26 @@ function validateIcon(
 
   // Only proceed with file checks if the path looks like a local file
   if (!isRemoteUrl && !isAbsolutePath && !hasVariableSubstitution) {
+    const fullIconPath = resolve(baseDir, iconPath);
+    const relativeIconPath = relative(baseDir, fullIconPath);
+
+    if (
+      relativeIconPath === ".." ||
+      relativeIconPath.startsWith(`..${sep}`) ||
+      isAbsolute(relativeIconPath)
+    ) {
+      errors.push(
+        "Icon path must stay within the bundle root. " +
+          `Found: "${iconPath}"`,
+      );
+      return {
+        valid: false,
+        errors,
+        warnings,
+      };
+    }
+
     // Check file existence
-    const fullIconPath = join(baseDir, iconPath);
     if (!existsSync(fullIconPath)) {
       errors.push(`Icon file not found at path: ${iconPath}`);
     } else {
