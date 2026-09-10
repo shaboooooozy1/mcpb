@@ -6,6 +6,7 @@ import { existsSync, readFileSync, statSync } from "fs";
 import { basename, dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
 
+import { connectToServer } from "../node/connect.js";
 import { signMcpbFile, unsignMcpbFile, verifyMcpbFile } from "../node/sign.js";
 import { cleanMcpb, validateManifest } from "../node/validate.js";
 import { initExtension } from "./init.js";
@@ -354,6 +355,99 @@ program
       process.exit(1);
     }
   });
+
+// Connect command
+program
+  .command("connect [directory]")
+  .description(
+    "Connect to an MCP server from an unpacked extension directory",
+  )
+  .option(
+    "-c, --config <key=value...>",
+    "User configuration values (e.g., -c api_key=my-key -c port=8080)",
+  )
+  .action(
+    (directory: string = process.cwd(), options: { config?: string[] }) => {
+      void (async () => {
+        try {
+          const extensionPath = resolve(directory);
+
+          if (!existsSync(extensionPath)) {
+            console.error(`ERROR: Directory not found: ${directory}`);
+            process.exit(1);
+          }
+
+          // Parse user config key=value pairs
+          const userConfig: Record<string, string> = {};
+          if (options.config) {
+            for (const pair of options.config) {
+              const eqIndex = pair.indexOf("=");
+              if (eqIndex === -1) {
+                console.error(
+                  `ERROR: Invalid config format "${pair}". Expected key=value`,
+                );
+                process.exit(1);
+              }
+              userConfig[pair.slice(0, eqIndex)] = pair.slice(eqIndex + 1);
+            }
+          }
+
+          console.log(`Connecting to MCP server in ${extensionPath}...`);
+
+          const connection = await connectToServer({
+            extensionPath,
+            userConfig,
+          });
+
+          console.log(
+            `Server started with PID ${connection.process.pid}`,
+          );
+          console.log(
+            `Command: ${connection.config.command} ${(connection.config.args ?? []).join(" ")}`,
+          );
+          console.log(`Forwarding stdin/stdout. Press Ctrl+C to exit.\n`);
+
+          // Forward server stdout to process stdout
+          connection.process.stdout?.on("data", (data: Buffer) => {
+            process.stdout.write(data);
+          });
+
+          // Forward server stderr to process stderr
+          connection.process.stderr?.on("data", (data: Buffer) => {
+            process.stderr.write(data);
+          });
+
+          // Forward process stdin to server stdin (strip trailing newline
+          // since send() appends its own newline delimiter)
+          process.stdin.resume();
+          process.stdin.on("data", (data: Buffer) => {
+            connection.send(data.toString().replace(/\r?\n$/, ""));
+          });
+
+          // Handle server process exit
+          connection.process.on("close", (code) => {
+            console.log(`\nServer process exited with code ${code}`);
+            process.exit(code ?? 0);
+          });
+
+          // Handle Ctrl+C
+          process.on("SIGINT", () => {
+            console.log("\nDisconnecting...");
+            connection.close();
+          });
+
+          process.on("SIGTERM", () => {
+            connection.close();
+          });
+        } catch (error) {
+          console.error(
+            `ERROR: ${error instanceof Error ? error.message : "Unknown error"}`,
+          );
+          process.exit(1);
+        }
+      })();
+    },
+  );
 
 // Parse command line arguments
 program.parse();

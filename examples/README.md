@@ -14,11 +14,15 @@ But, the MCP servers themselves are not robust secure production ready servers a
 
 ## Examples Included
 
-| Example               | Type    | Demonstrates                             |
-| --------------------- | ------- | ---------------------------------------- |
-| `hello-world-node`    | Node.js | Basic MCP server with simple time tool   |
-| `chrome-applescript`  | Node.js | Browser automation via AppleScript       |
-| `file-manager-python` | Python  | File system operations and path handling |
+| Example               | Type    | Demonstrates                                              |
+| --------------------- | ------- | --------------------------------------------------------- |
+| `hello-world-node`    | Node.js | Basic MCP server with simple time tool                    |
+| `hello-world-uv`      | Python  | Basic MCP server using the UV runtime                     |
+| `chrome-applescript`  | Node.js | Browser automation via AppleScript (macOS only)           |
+| `file-system-node`    | Node.js | File system access via @modelcontextprotocol/server-filesystem |
+| `file-manager-python` | Python  | File system operations and path handling                  |
+| `github-node`         | Node.js | GitHub API — repos, issues, PRs, code search              |
+| `sqlite-node`         | Node.js | Local SQLite database — query, execute, schema inspection |
 
 ## Usage
 

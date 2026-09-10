@@ -1,0 +1,85 @@
+{
+  "$schema": "../../dist/mcpb-manifest.schema.json",
+  "manifest_version": "0.3",
+  "name": "sqlite-node",
+  "display_name": "SQLite",
+  "version": "1.0.0",
+  "description": "Query and manage local SQLite databases.",
+  "long_description": "This MCP bundle gives Claude read and write access to a local SQLite database file. You can inspect schemas, run SELECT queries, execute INSERT/UPDATE/DELETE statements, and create or drop tables — all against a SQLite file on your machine.\n\nCapabilities include:\n- Listing tables and inspecting their schemas\n- Running arbitrary SELECT queries\n- Executing INSERT, UPDATE, and DELETE statements\n- Creating and dropping tables\n- Getting database metadata (size, table count, etc.)",
+  "author": {
+    "name": "Anthropic",
+    "email": "support@anthropic.com",
+    "url": "https://github.com/anthropics"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anthropics/mcpb.git"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {
+        "SQLITE_DB_PATH": "${user_config.database_path}",
+        "SQLITE_READONLY": "${user_config.readonly}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "list_tables",
+      "description": "List all tables in the SQLite database"
+    },
+    {
+      "name": "describe_table",
+      "description": "Get the schema (column names, types, constraints) of a table"
+    },
+    {
+      "name": "query",
+      "description": "Run a SELECT query and return results"
+    },
+    {
+      "name": "execute",
+      "description": "Execute an INSERT, UPDATE, DELETE, or other write statement"
+    },
+    {
+      "name": "create_table",
+      "description": "Create a new table with a specified schema"
+    },
+    {
+      "name": "drop_table",
+      "description": "Drop (permanently delete) a table"
+    },
+    {
+      "name": "get_database_info",
+      "description": "Get metadata about the database (size, table count, SQLite version)"
+    }
+  ],
+  "keywords": ["sqlite", "database", "sql", "local", "data"],
+  "license": "MIT",
+  "user_config": {
+    "database_path": {
+      "type": "file",
+      "title": "SQLite Database File",
+      "description": "Path to the SQLite database file (.db or .sqlite). The file will be created if it does not exist.",
+      "required": true
+    },
+    "readonly": {
+      "type": "boolean",
+      "title": "Read-Only Mode",
+      "description": "When enabled, only SELECT queries are allowed. Prevents accidental data modification.",
+      "default": false,
+      "required": false
+    }
+  },
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "privacy_policies": []
+}
