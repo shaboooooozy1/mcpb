@@ -3,7 +3,7 @@ import { McpbManifestSchema as McpbManifestSchema_v0_2 } from "../dist/schemas/0
 import { McpbManifestSchema as McpbManifestSchema_v0_3 } from "../dist/schemas/0.3.js";
 import { McpbManifestSchema as McpbManifestSchema_v0_4 } from "../dist/schemas/0.4.js";
 import { McpbSignatureInfoSchema } from "../dist/shared/common.js";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { toJSONSchema } from "zod";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -28,7 +28,7 @@ const allSchemas = { ...versionedManifestSchemas, ...otherSchemas };
 // Generate all schemas to dist/
 await fs.mkdir(distDir, { recursive: true });
 for (const [key, schema] of Object.entries(allSchemas)) {
-  const jsonSchema = zodToJsonSchema(schema);
+  const jsonSchema = toJSONSchema(schema, { target: "draft-07" });
   const filePath = path.join(distDir, `${key}.schema.json`);
   await fs.writeFile(filePath, JSON.stringify(jsonSchema, null, 2), {
     encoding: "utf8",
@@ -38,7 +38,7 @@ for (const [key, schema] of Object.entries(allSchemas)) {
 // Generate all versioned manifest schemas to schemas/
 await fs.mkdir(schemasDir, { recursive: true });
 for (const [key, schema] of Object.entries(versionedManifestSchemas)) {
-  const jsonSchema = zodToJsonSchema(schema);
+  const jsonSchema = toJSONSchema(schema, { target: "draft-07" });
   const filePath = path.join(schemasDir, `${key}.schema.json`);
   await fs.writeFile(filePath, JSON.stringify(jsonSchema, null, 2), {
     encoding: "utf8",
